@@ -7,7 +7,6 @@
 #include <string>
 #include <csignal>
 
-// ─── Global server pointer for graceful shutdown ─────────────────────────────
 static httplib::Server* g_server = nullptr;
 
 static void signal_handler(int) {

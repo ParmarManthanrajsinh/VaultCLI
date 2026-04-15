@@ -1,3 +1,5 @@
+---
+
 # VaultCLI – Secure Cross-Platform Cloud File Server
 
 A cross-platform terminal-based cloud file storage system written in modern C++ (C++20).  
@@ -24,6 +26,7 @@ Users can register, log in, upload files, download files, and list their stored 
 ```
 VaultCLI/
 ├── CMakeLists.txt              # Root build configuration
+├── Makefile                    # Build automation (recommended)
 ├── README.md
 ├── common/                     # Shared library
 │   ├── CMakeLists.txt
@@ -69,42 +72,65 @@ VaultCLI/
   - macOS: Clang 12+ (Xcode Command Line Tools)
 - **CMake** 3.20 or later
 - **OpenSSL** development libraries
+- **Ninja** build system (recommended for speed)
 - **Git** (for FetchContent dependencies)
 
-### Installing OpenSSL
+### Installing Dependencies
 
 | Platform | Command |
 |----------|---------|
-| **Windows** | `choco install openssl` or download from [slproweb.com](https://slproweb.com/products/Win32OpenSSL.html) |
-| **Ubuntu/Debian** | `sudo apt install libssl-dev` |
-| **Fedora/RHEL** | `sudo dnf install openssl-devel` |
-| **macOS** | `brew install openssl` |
+| **Windows** | `choco install openssl ninja` or download manually |
+| **Ubuntu/Debian** | `sudo apt install libssl-dev ninja-build` |
+| **Fedora/RHEL** | `sudo dnf install openssl-devel ninja-build` |
+| **macOS** | `brew install openssl ninja` |
 
 ---
 
 ## 🚀 Build Instructions
 
-### 1. Configure
+### Quick Build with Make (Recommended)
 
 ```bash
 cd VaultCLI
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build release version (optimized)
+make release
+
+# Build debug version (with symbols)
+make debug
+
+# Clean build directory
+make clean
+
+# Show help
+make help
 ```
 
-> **macOS Note**: If OpenSSL was installed via Homebrew, you may need:
-> ```bash
-> cmake -B build -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR=$(brew --prefix openssl)
-> ```
+### Build Output
 
-### 2. Build
+After building, you'll find two executables:
+- `build/server/vault_server` - Server executable
+- `build/client/vault_client` - Client executable
 
-```bash
-cmake --build build --config Release
-```
+> **Windows Note**: Executables will have `.exe` extension
 
-This produces two executables:
-- `build/server/vault_server` (or `Release/vault_server.exe` on Windows)
-- `build/client/vault_client` (or `Release/vault_client.exe` on Windows)
+---
+
+## 📦 Makefile Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `make release` | Build release version with `-O2 -march=native` optimization |
+| `make debug` | Build debug version with debug symbols (`-g -O0`) |
+| `make clean` | Remove build directory and all generated files |
+| `make help` | Display available commands |
+
+### Makefile Features
+
+- **Cross-platform** – Works on Linux, macOS, and Windows
+- **Optimized builds** – `-O2 -march=native -DNDEBUG` for release
+- **Automatic cleanup** – Removes old build before rebuilding
+- **Color output** – Green for success, yellow for warnings (Linux/macOS)
 
 ---
 
@@ -113,7 +139,10 @@ This produces two executables:
 ### Start the Server
 
 ```bash
-# Default: listen on 0.0.0.0:8080
+# Using Make (Linux/macOS only)
+make run-server
+
+# Manual
 ./build/server/vault_server
 
 # Custom port
@@ -123,7 +152,10 @@ This produces two executables:
 ### Start the Client
 
 ```bash
-# Connect to localhost:8080
+# Using Make (Linux/macOS only)
+make run-client
+
+# Manual
 ./build/client/vault_client
 
 # Connect to custom server
@@ -145,13 +177,14 @@ This produces two executables:
 
 1. **Start the server** in Terminal 1:
    ```
-   > vault_server --port 8080
+   make release
+   ./build/server/vault_server --port 8080
    [Server] Listening on 0.0.0.0:8080
    ```
 
 2. **Start the client** in Terminal 2:
    ```
-   > vault_client
+   ./build/client/vault_client
    ```
 
 3. **Register** a new account:
@@ -224,7 +257,3 @@ This produces two executables:
 | [OpenSSL](https://www.openssl.org/) | System | Cryptography (AES, SHA) |
 
 ---
-
-## 📄 License
-
-This project is provided for educational and demonstration purposes.
