@@ -22,11 +22,14 @@ FetchContent_Declare(
     httplib
     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
     GIT_TAG        v0.15.3
+    GIT_SHALLOW    TRUE
 )
+
 FetchContent_Declare(
     nlohmann_json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG        v3.11.3
+    GIT_SHALLOW    TRUE
 )
 
 FetchContent_MakeAvailable(httplib nlohmann_json)
@@ -36,12 +39,20 @@ find_package(ftxui QUIET COMPONENTS component screen dom)
 if(ftxui_FOUND)
     message(STATUS "Found system FTXUI in ${ftxui_DIR}")
 else()
-    message(STATUS "System FTXUI not found, downloading...")
+    message(STATUS "System FTXUI not found, downloading shallow clone...")
     FetchContent_Declare(
         ftxui
         GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI.git
         GIT_TAG        v5.0.0
+        GIT_SHALLOW    TRUE
     )
+    
+    # Disable optional components to save build time
+    set(FTXUI_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(FTXUI_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(FTXUI_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(FTXUI_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+    
     FetchContent_MakeAvailable(ftxui)
 endif()
 
